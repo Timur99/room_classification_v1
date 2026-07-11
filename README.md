@@ -16,45 +16,78 @@
 | `view_from_window` | Вид из окна |
 | `yard` | Двор, участок, внешняя территория |
 
-## Задача
-
-По входному изображению модель предсказывает класс помещения/зоны. Проект ориентирован на автоматическую разметку и анализ фотографий объектов недвижимости: фильтрация, группировка снимков по типу комнаты, контроль качества контента.
-
-## Технологии
-
-- **YOLO** — детекция и классификация объектов на изображении
-- Python
-
-## Структура проекта (план)
+## Структура проекта
 
 ```
 room_classification_v1/
-├── data/              # датасет (train / val / test)
-├── models/            # веса обученной модели
-├── configs/           # конфигурация обучения YOLO
-├── scripts/           # обучение, инференс, оценка
+├── model/
+│   └── yolo_cls_room.pt   # веса обученной модели
+├── photos/
+│   └── test1.jpg … test6.jpg  # тестовые фото
+├── outputs/               # результаты с наложенными метками
+├── predict.py             # скрипт инференса
+├── requirements.txt
 └── README.md
 ```
 
-## Использование
-
-> Раздел будет дополнен после добавления скриптов обучения и инференса.
-
-### Обучение
+## Установка
 
 ```bash
-# TODO: команда обучения YOLO
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### Инференс
+## Инференс
+
+Одно изображение:
 
 ```bash
-# TODO: команда предсказания на изображении
+python predict.py --model model/yolo_cls_room.pt --source photos/test1.jpg
 ```
 
-## Датасет
+Все тестовые фото:
 
-Изображения размечаются по 7 классам, перечисленным выше. Формат аннотаций — YOLO (`.txt` с нормализованными координатами bbox или метками класса для задачи классификации).
+```bash
+python predict.py --model model/yolo_cls_room.pt --source photos --out outputs
+```
+
+Результаты сохраняются в `outputs/` — на каждое фото накладывается метка класса и confidence.
+
+## Примеры результатов
+
+| Фото | Предсказание | Confidence |
+|------|-------------|------------|
+| test1.jpg | kitchen | 99.4% |
+| test2.jpg | bathroom | 99.6% |
+| test3.jpg | yard | 87.3% |
+| test4.jpg | bedroom | 99.4% |
+| test5.jpg | pool | 100.0% |
+| test6.jpg | view_from_window | 83.4% |
+
+### kitchen — 99.4%
+
+![kitchen](outputs/test1_pred.jpg)
+
+### bathroom — 99.6%
+
+![bathroom](outputs/test2_pred.jpg)
+
+### yard — 87.3%
+
+![yard](outputs/test3_pred.jpg)
+
+### bedroom — 99.4%
+
+![bedroom](outputs/test4_pred.jpg)
+
+### pool — 100.0%
+
+![pool](outputs/test5_pred.jpg)
+
+### view_from_window — 83.4%
+
+![view_from_window](outputs/test6_pred.jpg)
 
 ## Лицензия
 
